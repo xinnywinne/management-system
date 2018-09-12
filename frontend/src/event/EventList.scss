@@ -1,0 +1,20 @@
+.cont {
+  display: flex;
+  x-justify-content: space-around;
+  x-align-items: stretch;
+  width: 80%;
+
+  .left, .right{
+  flex: 0 0 85px;
+  margin: 5px;
+    }
+  .cent{
+  flex: 1;
+  margin: 5px;
+    }
+}
+
+.addbutton {
+  position: absolute;
+  right: 50px;
+}

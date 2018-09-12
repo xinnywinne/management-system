@@ -1,0 +1,15 @@
+.cont {
+  display: flex;
+  x-justify-content: space-around;
+  x-align-items: stretch;
+  width: 60%;
+
+  .orderstatus, .button{
+  flex: 0 0 100px;
+  margin: 10px;
+    }
+  .orderitem{
+  flex: 1;
+  margin: 10px;
+    }
+}
