@@ -4,17 +4,19 @@
   x-align-items: stretch;
   width: 80%;
 
-  .left, .right{
-  flex: 0 0 85px;
-  margin: 5px;
-    }
-  .cent{
-  flex: 1;
-  margin: 5px;
-    }
+  .left, .right {
+    flex: 0 0 85px;
+    margin: 5px;
+  }
+
+  .cent {
+    flex: 1;
+    margin: 5px;
+  }
 }
 
 .addbutton {
-  position: absolute;
-  right: 50px;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
 }

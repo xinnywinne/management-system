@@ -1,14 +1,36 @@
 const express = require('express');
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
-const config = require('../config.js');
-const DBPool = mysql.createPool(config.db);
-const event = express.Router(); 
+const event = express.Router();
+const Event = require('../model/Event');
+const Performer = require('../model/Performer');
+const PerformerEvent = require('../model/PerformerEvent');
 
-event.get('/api/v1/events', function (req, res) {
-  DBPool.query('SELECT * FROM Event', function (error, results, fields) {
-    if (error) throw error;
-    return res.send({error: false, data: results, message: 'Event lists'});
+Performer.belongsToMany(Event, {through: PerformerEvent});
+Event.belongsToMany(Performer, {through: PerformerEvent});
+
+event.get('', function (req, res) {
+  Event.findAll({
+    include: [Performer],
+  }).then((data) => {
+    res.json({
+      error: false,
+      data: data,
+      message: 'Event lists',
+    });
+  }, (error) => {
+    res.json({
+      error: error
+    });
+  });
+});
+
+event.get('/:eventId', (req, res) => {
+  Event.findOne(
+    {
+      include: [Performer],
+      where: {Id: 1}
+    }
+  ).then((data) => {
+    res.json(data);
   });
 });
 

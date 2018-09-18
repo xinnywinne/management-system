@@ -13,6 +13,6 @@ export function loadEvents(){
   return (dispatch) => {
     axios.get('/api/v1/events').then((response) => {
       dispatch(createLoadEventsAction(response.data.data));
-    }); 
+    });
   }
 }
