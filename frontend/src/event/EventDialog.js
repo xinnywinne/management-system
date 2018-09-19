@@ -1,21 +1,26 @@
 import React from 'react';
+import _ from 'lodash';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import ReactSelect from 'react-select';
 import './EventDialog.scss';
 import {connect} from 'react-redux';
+import {
+  updateEvent
+} from '../model/actions/eventAction';
+
 
 function convertDatetoString(date) {
   const tmp = date.toISOString().split('T');
   return tmp[0] + ' ' + tmp[1].split('.')[0];
+}
+
+function convertToUTCString(date) {
+  return date.split(' ')[0] + 'T' + date.split(' ')[1] + '.000Z';
 }
 
 class EventDialog extends React.Component {
@@ -48,7 +53,7 @@ class EventDialog extends React.Component {
       mapSuggestions: mapSuggestions,
       performers: Performers.map((performer) => {
         return suggestions.find((suggestion) => {
-          return performer.Id === suggestion.performer.Id;
+          return performer.PerformerId === suggestion.performer.Id;
         })
       }),
       time: convertDatetoString(new Date(UtcDateTime)),
@@ -74,6 +79,57 @@ class EventDialog extends React.Component {
     this.setState({
       event: Object.assign({}, this.state.event, {[name]: event.target.value})
     });
+  }
+
+  handleSave = () => {
+    console.log('save');
+    const data = {};
+    const eventId = this.props.selectedEvent.Id;
+    const rawEvent = this.props.selectedEvent;
+    const newEvent = this.state.event;
+    console.log(this.props.selectedEvent);
+    console.log(this.state);
+
+    if (rawEvent.Name !== newEvent.Name) {
+      data['Name'] = newEvent.Name;
+    }
+
+    if (rawEvent.Img !== newEvent.Img) {
+      data['Img'] = newEvent.Img;
+    }
+
+    if (rawEvent.Description !== newEvent.Description) {
+      data['Description'] = newEvent.Description;
+    }
+
+    if (rawEvent.UtcDateTime !== convertToUTCString(this.state.time)) {
+      data['UtcDateTime'] = convertToUTCString(this.state.time);
+    }
+
+    if (rawEvent.MapId !== this.state.arena.value) {
+      data['MapId'] = this.state.arena.value;
+    }
+
+    const rawPerformerIds = rawEvent.Performers.map((performer) => {
+      return performer.PerformerId;
+    });
+    const newPerformerIds = this.state.performers.map((selected) => {
+      return selected.performer.Id;
+    });
+
+    console.log(rawPerformerIds);
+    console.log(newPerformerIds);
+
+    if (!_.isEqual(rawPerformerIds.sort(), newPerformerIds.sort())) {
+      data['removePerformers'] = _.difference(rawPerformerIds, newPerformerIds);
+      data['addPerformers'] = _.difference(newPerformerIds,rawPerformerIds);
+    }
+
+    updateEvent(eventId, data).then((data) => {
+      console.log(data);
+    });
+
+    this.props.onClose();
   }
 
   render() {
@@ -144,7 +200,7 @@ class EventDialog extends React.Component {
           <Button onClick={this.props.onClose} color="primary" autoFocus>
             关闭
           </Button>
-          <Button onClick={this.props.onClose} color="primary" autoFocus>
+          <Button onClick={this.handleSave} color="primary" autoFocus>
             保存
           </Button>
         </DialogActions>

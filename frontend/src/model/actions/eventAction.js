@@ -16,3 +16,7 @@ export function loadEvents(){
     });
   }
 }
+
+export function updateEvent(eventId, data) {
+  return axios.put('/api/v1/events/' + eventId, data);
+}

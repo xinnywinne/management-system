@@ -7,6 +7,7 @@ const Event = require('../model/Event');
 const PerformerEvent = sequelize.define('PerformerEvent', {
   PerformerId: {
     type: Sequelize.STRING(80),
+    primaryKey: true,
     references: {
       model: Performer,
       key: 'Id'
@@ -14,6 +15,7 @@ const PerformerEvent = sequelize.define('PerformerEvent', {
   },
   EventId: {
     type: Sequelize.STRING(80),
+    primaryKey: true,
     references: {
       model: Event,
       key: 'Id'

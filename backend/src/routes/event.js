@@ -4,12 +4,18 @@ const Event = require('../model/Event');
 const Performer = require('../model/Performer');
 const PerformerEvent = require('../model/PerformerEvent');
 
-Performer.belongsToMany(Event, {through: PerformerEvent});
-Event.belongsToMany(Performer, {through: PerformerEvent});
+//Performer.belongsToMany(Event, {through: PerformerEvent});
+//Event.belongsToMany(Performer, {through: PerformerEvent});
+Event.hasMany(PerformerEvent, {foreignKey: 'EventId', as: 'Performers'});
+
 
 event.get('', function (req, res) {
   Event.findAll({
-    include: [Performer],
+    include: [{
+      model: PerformerEvent,
+      as: 'Performers',
+      attributes: ['PerformerId']
+    }],
   }).then((data) => {
     res.json({
       error: false,
@@ -32,6 +38,10 @@ event.get('/:eventId', (req, res) => {
   ).then((data) => {
     res.json(data);
   });
+});
+
+event.put('/:eventId', (req, res) => {
+  res.json(req.body);
 });
 
 module.exports = event;
