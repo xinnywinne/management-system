@@ -12,18 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { withRouter } from "react-router-dom";
 
 
-
-
-/*（const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginLeft: -18,
-    marginRight: 10,
-  },
-}; */
-
 class Navigation extends Component {
 
   constructor(props){
@@ -40,12 +28,8 @@ class Navigation extends Component {
     this.setState({open: true});
   }
 
-  handleOrders = () => {
-    this.props.history.push('/orders');
-    this.setState({open: false});
-    }
-  handleEvents = () => {
-    this.props.history.push('/events');
+  handleMenuClick = (url) => {
+    this.props.history.replace(url);
     this.setState({open: false});
   }
 
@@ -56,11 +40,17 @@ class Navigation extends Component {
           <ChevronLeft/>
         </IconButton>
         <Divider />
-        <ListItem button onClick={this.handleOrders}>
+        <ListItem button onClick={() => {this.handleMenuClick('/orders');}}>
           <ListItemText primary="订单状态管理" />
         </ListItem>
-        <ListItem button onClick={this.handleEvents}>
+        <ListItem button onClick={() => {this.handleMenuClick('/performers');}}>
+          <ListItemText primary="歌星/球队管理" />
+        </ListItem>
+        <ListItem button onClick={() => {this.handleMenuClick('/events');}}>
           <ListItemText primary="活动管理" />
+        </ListItem>
+        <ListItem button onClick={() => {this.handleMenuClick('/arenas');}}>
+          <ListItemText primary="场馆管理" />
         </ListItem>
       </Drawer>
       );
@@ -80,7 +70,7 @@ class Navigation extends Component {
     </div>
   );
   }
-  
+
 }
 
 

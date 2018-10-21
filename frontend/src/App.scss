@@ -26,3 +26,20 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.addbutton {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+}
+
+.list-container {
+  width: 90%;
+  margin: auto;
+
+  .action-container {
+    button {
+      margin-right: 5px;
+    }
+  }
+}
