@@ -25,7 +25,7 @@ class ArenaList extends Component {
 
   render(){
     console.log(this.props.maps);
-    const maps = this.props.maps;
+    const maps = this.props.maps && this.props.maps.all || [];
     return (
       <div className="list-container">
         <Table>

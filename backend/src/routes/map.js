@@ -11,4 +11,12 @@ router.get('', function (req, res) {
   });
 });
 
+router.get('/:mapId', (req, res) => {
+  Map.findOne({
+    where: {Id: 1}
+  }).then((data) => {
+    res.json(data);
+  });
+});
+
 module.exports = router;

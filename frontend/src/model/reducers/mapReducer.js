@@ -1,11 +1,14 @@
 import {
-  LOADED_MAPS
+  LOADED_MAPS,
+  LOADED_MAP
 } from '../actions/mapAction';
 
-function maps (state = [], action) {
+function maps (state = {}, action) {
   switch (action.type) {
     case LOADED_MAPS:
-      return action.data;
+      return Object.assign({}, state, {all: action.data});
+    case LOADED_MAP:
+      return Object.assign({}, state, {map: action.data});
     default:
       return state;
   }
