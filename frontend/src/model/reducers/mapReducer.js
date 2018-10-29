@@ -1,6 +1,7 @@
 import {
   LOADED_MAPS,
-  LOADED_MAP
+  LOADED_MAP,
+  LOADED_SECTIONS
 } from '../actions/mapAction';
 
 function maps (state = {}, action) {
@@ -9,6 +10,8 @@ function maps (state = {}, action) {
       return Object.assign({}, state, {all: action.data});
     case LOADED_MAP:
       return Object.assign({}, state, {map: action.data});
+    case LOADED_SECTIONS:
+      return Object.assign({}, state, {secitons: action.data});
     default:
       return state;
   }

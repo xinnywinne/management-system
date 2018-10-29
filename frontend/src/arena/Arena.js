@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import TextField from '@material-ui/core/TextField';
-import {loadMap} from '../model/actions/mapAction';
+import {
+  loadMap,
+  createMapSection,
+  loadSections
+} from '../model/actions/mapAction';
 import Button from '@material-ui/core/Button';
+import MapSection from './MapSection';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import './arena.scss';
+
 
 const BackGroundStyle = {
   WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)'
@@ -26,12 +36,14 @@ class Arena extends Component {
     this.state = {
       arenaId: props.match.params.arena_id,
       buildingPaths: [],
+      modifySectionMode: true
     };
     console.log(this.state);
   }
 
   componentDidMount = () => {
     this.props.dispatch(loadMap(this.state.arenaId));
+    this.props.dispatch(loadSections(this.state.arenaId));
   }
 
   static getDerivedStateFromProps = (props, state) => {
@@ -69,10 +81,31 @@ class Arena extends Component {
   }
 
   handleSavePath = () => {
+    if (this.state.buildingPaths.length > 2) {
+      const path = this.state.buildingPaths.reduce((cv, point, index) => {
+        if (0 == index) {
+          return `M${point.x},${point.y}`;
+        } else {
+          return `${cv}L${point.x},${point.y}`;
+        }
+      }, '');
+      createMapSection(this.state.arenaId, {
+        path: `${path}Z`,
+        type: 'section',
+      });
+    }
+  }
 
+  handleSectionModeSwitch = () => {
+    this.setState({
+      modifySectionMode: !this.state.modifySectionMode
+    });
   }
 
   handleClick = (evt) => {
+    if (this.state.modifySectionMode) {
+      return;
+    }
     if (!svg || !pt) {
       svg = document.getElementById("svgDoc");
       pt = svg.createSVGPoint();
@@ -85,11 +118,10 @@ class Arena extends Component {
     this.setState({
       buildingPaths: [...this.state.buildingPaths, getSvgCoords(evt)]
     })
-    console.log(getSvgCoords(evt));
   }
 
   render() {
-    if (!this.props.map) {
+    if (!this.props.map || !this.props.sections) {
       return '';
     }
 
@@ -97,10 +129,7 @@ class Arena extends Component {
       return '';
     }
 
-    console.log(this.state);
-
     const imagePath = this.props.map && this.props.map.Img || '';
-
     const circles = this.state.buildingPaths.map((point, index) => {
       return (
         <circle
@@ -120,6 +149,18 @@ class Arena extends Component {
         <polygon points={polygonPoints} fill="none" stroke="red" />
       );
     }
+
+    const paths = this.props.sections.map((section) => {
+      var show = true;
+      if (!!!section.Type) {
+        // BBOX
+        if (this.state.modifySectionMode) {
+          // Modify
+          show = false;
+        }
+      }
+      return (<MapSection section={section} show={show}></MapSection>);
+    });
 
     return (
       <div className="list-container">
@@ -157,6 +198,16 @@ class Arena extends Component {
             </Button>
           </form>
           <div>
+            <FormGroup row>
+              <FormControlLabel
+                  control={
+                    <Switch
+                        checked={this.state.modifySectionMode}
+                        onChange={this.handleSectionModeSwitch}/>}
+                  label="修改已经存在区域模式"/>
+            </FormGroup>
+          </div>
+          <div className="arena">
             <svg viewBox="0 0 4096 4096" style={SvgStyle}
                 id="svgDoc"
                 onClick={this.handleClick}>
@@ -169,6 +220,7 @@ class Arena extends Component {
                      style={BackGroundStyle}
                      strokeWidth="1">
               </image>
+              {paths}
               {circles}
               {polygon}
             </svg>
@@ -195,7 +247,8 @@ class Arena extends Component {
 
 const mapStoreToProps = (state, ownProps) => {
   return {
-    map: state.maps.map
+    map: state.maps.map,
+    sections: state.maps.secitons
   }
 }
 
